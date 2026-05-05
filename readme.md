@@ -153,6 +153,9 @@ tests/
 * Architecture separates queries, serializers, and views for **clean code & maintainability**
 * Ready to extend with caching, Celery tasks, and ASGI deployment for real-time features
 
+## 📚 Live API Documentation
+![API Documentation Screenshot](images/api-docs.png)
+
 ---
 
 ## License
