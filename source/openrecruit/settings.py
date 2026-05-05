@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'api',
     'frontend',
 ]
+INSTALLED_APPS.insert(-1, 'drf_spectacular',)
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -52,6 +53,13 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.CursorPagination',
     'PAGE_SIZE': 20,
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Open Recruit API',
+    'DESCRIPTION': 'Job Recruitment System API',
+    'VERSION': '1.0.0',
 }
 
 MIDDLEWARE = [
