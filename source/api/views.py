@@ -4,19 +4,17 @@ from api.serializers import (
     UserSerializer,
     JobSerializer,
     ApplicationSerializer
-    )
+)
 from api.queries import (
     get_all_users,
     get_open_jobs,
     get_applications_for_job,
     get_applications_by_stage,
     get_all_applications
-    )
+)
 from api.paginations import StandardCursorPagination, UserCursorPagination
-from api.permissions import IsManager, IsRecruiter, IsAuthenticated
+from api.permissions import IsManager, IsRecruiterOrManager, IsManagerOrReadOnly
 
-
-# Create your views here.
 
 class UserViewSet(viewsets.ModelViewSet):
     permission_classes = [IsManager]
@@ -26,16 +24,18 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return get_all_users()
 
+
 class JobViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsManager]
+    permission_classes = [IsManagerOrReadOnly]  # ← تغير هنا
     serializer_class = JobSerializer
     pagination_class = StandardCursorPagination
 
     def get_queryset(self):
         return get_open_jobs()
 
+
 class ApplicationViewSet(viewsets.ModelViewSet):
-    permission_classes = [IsRecruiter]
+    permission_classes = [IsRecruiterOrManager]  # ← تغير هنا
     serializer_class = ApplicationSerializer
     pagination_class = StandardCursorPagination
 
@@ -44,3 +44,4 @@ class ApplicationViewSet(viewsets.ModelViewSet):
         if stage:
             return get_applications_by_stage(stage)
         return get_all_applications()
+        
