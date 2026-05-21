@@ -47,7 +47,10 @@ class Application(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        unique_together = ("job", "candidate_full_name")
+        constraints = [
+            models.UniqueConstraint(fields=['job',
+            'candidate_full_name'], name='unique_application_for_job'),
+        ]
     
     def __str__(self):
         return f"{self.candidate_full_name} - {self.job.title}"
