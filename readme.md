@@ -1,4 +1,4 @@
-﻿
+﻿GitHub - superprogrammersys/open-recruit: Job Recruitment System · GitHub
 # Job Recruitment API
 
 **Backend API** for managing users, jobs, and applications.  
@@ -28,13 +28,24 @@ Built with **Django** and **Django REST Framework**, featuring role-based permis
 
 ---
 
+## Prerequisites
+
+1. **Install Erlang/OTP 26.2.5**  
+   Download from: [otp_win64_26.2.5.exe](https://github.com/erlang/otp/releases/tag/OTP-26.2.5)
+
+2. **Install RabbitMQ 3.13.7**  
+   Download from: [rabbitmq-server-windows-3.13.7.zip](https://github.com/rabbitmq/rabbitmq-server/releases/tag/v3.13.7)  
+   Extract to a permanent location (e.g., `C:\Program Files\RabbitMQ Server\rabbitmq_server-3.13.7`)
+
+---
+
 ## Installation
 
 ### 1. Clone repository
 ```bash
 git clone https://github.com/superprogrammersys/open-recruit.git
 cd <open-recruit
-````
+```
 
 ### 2. Create virtual environment
 
@@ -62,9 +73,31 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-### 6. Run the development server
+---
 
+## Running the Application
+
+### 1. Start RabbitMQ (in a separate terminal)
 ```bash
+cd "C:\Program Files\RabbitMQ Server\rabbitmq_server-3.13.7\sbin"
+rabbitmq-server.bat
+```
+Leave this terminal open. You should see: `Starting broker... completed with 0 plugins.`
+
+### 2. Start Celery Worker (in a separate terminal)
+```bash
+cd open-recruit
+venv\Scripts\activate
+cd source
+celery -A openrecruit worker -l info -P solo
+```
+You should see: `celery@... ready.` and `[tasks] . api.tasks.send_email`.
+
+### 3. Run the development server (in a separate terminal)
+```bash
+cd open-recruit
+venv\Scripts\activate
+cd source
 python manage.py runserver
 ```
 
@@ -141,8 +174,46 @@ api/
 ├── views.py           # ViewSets with pagination & permissions
 ├── paginations.py     # Cursor pagination classes
 ├── permissions.py     # Custom role-based permissions
+├── hooks.py           # Signal handlers for automatic email notifications
+├── tasks.py           # Celery tasks for async email sending
 tests/
 ├── test.py            # Unit & integration tests
+```
+
+---
+
+## Deployment (Production)
+
+### 1. Run RabbitMQ as a Windows Service
+```bash
+cd "C:\Program Files\RabbitMQ Server\rabbitmq_server-3.13.7\sbin"
+rabbitmq-service.bat install
+rabbitmq-service.bat start
+```
+
+### 2. Run Celery as a Windows Service (using NSSM)
+Download [NSSM](https://nssm.cc/download) and run:
+```bash
+nssm install CeleryWorker
+# Application: C:\path\to\venv\Scripts\celery.exe
+# Arguments: -A openrecruit worker -l info -P solo
+# Startup directory: C:\path\to\open-recruit\source
+nssm start CeleryWorker
+```
+
+### 3. Run Daphne for production
+```bash
+daphne -b 0.0.0.0 -p 8000 openrecruit.asgi:application
+```
+
+### 4. Production Settings
+Create a `settings_production.py`:
+```python
+from .settings import *
+DEBUG = False
+ALLOWED_HOSTS = ['yourdomain.com', 'your-server-ip']
+SECRET_KEY = 'your-secret-key'
+CELERY_BROKER_URL = 'amqp://localhost:5672//'
 ```
 
 ---
@@ -161,8 +232,4 @@ tests/
 ## License
 
 MIT License
-
 ```
-
----
-

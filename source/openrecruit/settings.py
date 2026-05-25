@@ -28,10 +28,12 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'api.User'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -39,11 +41,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'drf_spectacular',
     'api',
     'frontend',
 ]
-INSTALLED_APPS.insert(-1, 'drf_spectacular',)
 
+# restframework configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -61,6 +64,16 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'Job Recruitment System API',
     'VERSION': '1.0.0',
 }
+
+# Celery Configuration
+CELERY_BROKER_URL = 'amqp://localhost:5672//'
+CELERY_RESULT_BACKEND = 'rpc://'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+ASGI_APPLICATION = 'openrecruit.asgi.application'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

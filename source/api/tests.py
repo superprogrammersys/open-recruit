@@ -216,7 +216,7 @@ class SerializerTests(APITestCase):
         data = {"job": self.job.id, "candidate_full_name": "Bob"}
         serializer = ApplicationSerializer(data=data)
         self.assertFalse(serializer.is_valid())
-        self.assertIn("non_field_errors", serializer.errors)
+        self.assertIn("candidate_full_name", serializer.errors)
 
     def test_application_serializer_update_bypasses_duplicate(self):
         app = Application.objects.create(

@@ -52,6 +52,7 @@ class Application(models.Model):
     
     job = models.ForeignKey(Job, on_delete=models.CASCADE)
     candidate_full_name = models.CharField(max_length=50)
+    candidate_email = models.EmailField(blank=False, null=False)
     stage = models.CharField(max_length=20, choices=STAGES, default="new")
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     notes = models.TextField(blank=True, max_length=5000)
@@ -60,8 +61,12 @@ class Application(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['job',
-            'candidate_full_name'], name='unique_application_for_job'),
+            models.UniqueConstraint(fields=[
+                'job',
+            'candidate_full_name',
+            'candidate_email',
+            ],
+            name='unique_application_for_job'),
         ]
         indexes = [
             models.Index(fields=['job', 'stage'], name='app_job_stage_idx'),
